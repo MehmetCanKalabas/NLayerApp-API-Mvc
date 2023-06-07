@@ -2,13 +2,17 @@
 using NLayer.Core.Repositories;
 using NLayer.Core.Services;
 using NLayer.Core.UnitOfWorks;
+<<<<<<< HEAD
+<<<<<<< HEAD
 using NLayer.Service.Exceptions;
+=======
+=======
+>>>>>>> parent of ee7a369 (Exceptions stages are set. Used Autofac to clean Program.cs)
 using System;
 using System.Collections.Generic;
 using System.Linq;
+>>>>>>> parent of ee7a369 (Exceptions stages are set. Used Autofac to clean Program.cs)
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NLayer.Service.Services
 {
@@ -47,12 +51,7 @@ namespace NLayer.Service.Services
 
         public async Task<T> GetByIdAsync(int id)
         {
-            var hasProduct = await _repository.GetByIdAsync(id);
-            if (hasProduct == null)
-            {
-                throw new NotFoundExceptions($"{typeof(T).Name}({id}) not found");
-            }
-            return hasProduct;
+            return await _repository.GetByIdAsync(id);
         }
 
         public async Task RemoveAsync(T entity)

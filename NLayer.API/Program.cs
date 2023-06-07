@@ -1,11 +1,5 @@
-using Autofac;
-using Autofac.Extensions.DependencyInjection;
 using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NLayer.API.Filters;
-using NLayer.API.Middlewares;
-using NLayer.API.Modules;
 using NLayer.Core.Repositories;
 using NLayer.Core.Services;
 using NLayer.Core.UnitOfWorks;
@@ -19,24 +13,37 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 // Add services to the container.
 
-builder.Services.AddControllers(options => options.Filters.Add(new ValidateFilterAttribute())).AddFluentValidation(x => x.RegisterValidatorsFromAssemblyContaining<ProductDtoValidator>());
-
-builder.Services.Configure<ApiBehaviorOptions>(options =>
-{
-    options.SuppressModelStateInvalidFilter = true;
-});
+builder.Services.AddControllers().AddFluentValidation(x => x.RegisterValidatorsFromAssemblyContaining<ProductDtoValidator>());
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+builder.Services.AddMemoryCache();
+
+
 builder.Services.AddScoped(typeof(NotFoundFilter<>));
+=======
+builder.Services.AddScoped<IUnitOfWork, UnifOfWork>();
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped(typeof(IService<>), typeof(Service<>));
+>>>>>>> parent of ee7a369 (Exceptions stages are set. Used Autofac to clean Program.cs)
+=======
+builder.Services.AddScoped<IUnitOfWork, UnifOfWork>();
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped(typeof(IService<>), typeof(Service<>));
+>>>>>>> parent of ee7a369 (Exceptions stages are set. Used Autofac to clean Program.cs)
 builder.Services.AddAutoMapper(typeof(MapProfile));
 
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 builder.Services.AddDbContext<AppDbContext>(x =>
 {
@@ -45,12 +52,6 @@ builder.Services.AddDbContext<AppDbContext>(x =>
         option.MigrationsAssembly(Assembly.GetAssembly(typeof(AppDbContext)).GetName().Name);
     });
 });
-
-builder.Host.UseServiceProviderFactory
-    (new AutofacServiceProviderFactory());
-
-builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder => containerBuilder.RegisterModule(new RepoServiceModule()));
-
 
 var app = builder.Build();
 
@@ -62,8 +63,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-app.UseCustomException();
 
 app.UseAuthorization();
 

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using NLayer.API.Filters;
 using NLayer.Core.DTOs;
 using NLayer.Core.Models;
 using NLayer.Core.Services;
@@ -9,12 +8,13 @@ using NLayer.Service.Services;
 
 namespace NLayer.API.Controllers
 {
+
     public class ProductsController : CustomBaseController
     {
         private readonly IMapper _mapper;
         private readonly IProductService _service;
 
-        public ProductsController(IMapper mapper, IService<Product> service, IProductService productService)
+        public ProductsController(IMapper mapper, IProductService productService)
         {
             _mapper = mapper;
             _service = productService;
@@ -36,15 +36,10 @@ namespace NLayer.API.Controllers
             return CreateActionResult(CustomResponseDto<List<ProductDto>>.Success(200, productsDto));
         }
 
-        [ServiceFilter(typeof(NotFoundFilter<Product>))]
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> All(int id)
         {
             var product = await _service.GetByIdAsync(id);
-            //if (product == null)
-            //{
-            //    return CreateActionResult(CustomResponseDto<ProductDto>.Fail(400, "Bu id'ye sahip ürün bulunamadı"));
-            //}
             var productsDto = _mapper.Map<ProductDto>(product);
 
             return CreateActionResult(CustomResponseDto<ProductDto>.Success(200, productsDto));
